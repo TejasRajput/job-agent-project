@@ -1,5 +1,6 @@
 using JobAgent.API.Repositories.Implementations;
 using JobAgent.API.Repositories.Interfaces;
+using JobAgent.API.Services;
 using JobAgent.API.Services.Implementations;
 using JobAgent.API.Services.Interfaces;
 
@@ -27,6 +28,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IResumeRepository, ResumeRepository>();
 builder.Services.AddScoped<IResumeService, ResumeService>();
 builder.Services.AddHttpClient<IAiService, AiService>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
+builder.Services.AddScoped<IJobService, JobService>();
 
 var app = builder.Build();
 

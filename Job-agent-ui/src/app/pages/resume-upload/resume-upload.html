@@ -1,1 +1,20 @@
-<p>resume-upload works!</p>
+<div class="upload-wrapper">
+    <h3>Upload Resume (PDF)</h3>
+
+    <div class="input-section">
+        <input type="file" accept="application/pdf" (change)="onFileSelected($event)" #fileInput hidden>
+
+        <button class="btn-secondary" (click)="fileInput.click()">
+            Choose File
+        </button>
+
+        <span class="file-name">
+            {{ selectedFile ? selectedFile.name : 'No file chosen' }}
+        </span>
+    </div>
+
+    <button class="btn-primary" [disabled]="!selectedFile || isUploading" (click)="onUpload()">
+        {{ isUploading ? 'Uploading...' : 'Upload' }}
+    </button>
+
+</div>

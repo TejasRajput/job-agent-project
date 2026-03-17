@@ -1,0 +1,21 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ResumeService {
+
+    private api = "http://localhost:5149/api/resume";
+
+    constructor(private http: HttpClient) { }
+
+    upload(file: File) {
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        return this.http.post(`${this.api}/upload`, formData);
+    }
+}

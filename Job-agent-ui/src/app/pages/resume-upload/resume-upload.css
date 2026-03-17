@@ -1,0 +1,49 @@
+.upload-wrapper {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: sans-serif;
+}
+
+.input-section {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.file-name {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+}
+
+.btn-secondary {
+    padding: 8px 15px;
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.btn-primary {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.error-text {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 10px;
+}
