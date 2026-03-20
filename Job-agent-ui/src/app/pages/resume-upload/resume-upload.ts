@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
 import { ResumeService } from '../../services/resume.service';
+import { FormsModule } from '@angular/forms';
+import { JobService } from '../../services/job.services';
+import { Router } from '@angular/router';
+import { JobStateService } from '../../services/job-state.service';
 
 @Component({
   selector: 'app-resume-upload',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './resume-upload.html',
   styleUrl: './resume-upload.css',
 })
@@ -12,19 +16,13 @@ export class ResumeUpload {
 
   file!: File;
 
-  constructor(private resumeService: ResumeService) { }
+  constructor(
+    private resumeService: ResumeService,
+    private jobService: JobService,
+    private router: Router,
+    private jobState: JobStateService,
+  ) { }
 
-  // onFileSelected(event: any) {
-  //   this.file = event.target.files[0];
-  // }
-
-  // upload() {
-
-  //   this.resumeService.upload(this.file)
-  //     .subscribe(res => {
-  //       console.log(res);
-  //     });
-  // }
 
   selectedFile: File | null = null;
   errorMessage: string | null = null;
@@ -50,23 +48,38 @@ export class ResumeUpload {
     }
   }
 
-  // Function called when the Upload button is clicked
+  // resume-upload.component.ts
   onUpload(): void {
     if (!this.selectedFile) return;
 
     this.isUploading = true;
-    this.resumeService.upload(this.selectedFile)
-      .subscribe(res => {
-        console.log(res);
-      });
+    this.errorMessage = null;
 
-    // For now, we simulate an API call to your backend
-    console.log('Sending to server...', this.selectedFile);
+    this.resumeService.upload(this.selectedFile).subscribe({
+      next: (res: any) => {
+        console.log('Uploaded:', res);
 
-    setTimeout(() => {
-      alert('Resume uploaded successfully!');
-      this.isUploading = false;
-      this.selectedFile = null;
-    }, 2000);
+        // After upload, automatically fetch jobs
+        const filePath = res.filePath; // return from API
+        this.jobService.recommendJobs(filePath).subscribe({
+          next: (jobs) => {
+            this.jobState.setJobs(jobs);
+            console.log('Jobs:', jobs);
+            this.router.navigate(['/job-recommendations'], { state: { jobs } });
+          },
+          error: (err) => {
+            console.error('Job fetch error:', err);
+          }
+        });
+
+        this.isUploading = false;
+        this.selectedFile = null;
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage = 'Upload failed';
+        this.isUploading = false;
+      }
+    });
   }
 }

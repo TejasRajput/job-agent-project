@@ -1,0 +1,26 @@
+<div class="container">
+    <h2>Job Recommendations</h2>
+
+    <div *ngIf="loading">Loading...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <table *ngIf="jobs.length > 0">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Required Skills</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let job of jobs">
+                <td>{{ job.title }}</td>
+                <td>{{ job.company }}</td>
+                <td>{{ job.location }}</td>
+                <td>{{ job.requiredSkills.join(', ') }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div *ngIf="!loading && jobs.length === 0">No job recommendations found.</div>
+</div>

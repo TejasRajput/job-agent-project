@@ -2,7 +2,7 @@
 {
     public class ResumeDto
     {
-        public string FilePath { get; set; } 
-        public List<string> Skills { get; set; }
+        public string FilePath { get; set; } = string.Empty;
+        public List<string> Skills { get; set; } = new List<string>();
     }
 }

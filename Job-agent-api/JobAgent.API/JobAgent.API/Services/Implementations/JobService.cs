@@ -15,19 +15,39 @@ namespace JobAgent.API.Services.Implementations
             _jobRepository = jobRepository;
         }
 
-        public List<Job> MatchJobs(List<string> candidateSkills)
+        public List<Job> MatchJobs(List<string> skills, int experience, List<string> education)
         {
             var allJobs = _jobRepository.GetAllJobs();
-            return allJobs
-                .Select(job =>
+            var rankedJobs = allJobs.Select(job =>
+            {
+                // Skill Score (50%)
+                int skillMatch = job.RequiredSkills.Count(s =>
+                    skills.Contains(s, StringComparer.OrdinalIgnoreCase));
+
+                double skillScore = (double)skillMatch / job.RequiredSkills.Count * 50;
+
+                // Experience Score (30%)
+                double expScore = experience >= job.MinExperience ? 30 : 0;
+
+                // Education Score (20%)
+                double eduScore = education.Any(e =>
+                    e.Contains(job.Education, StringComparison.OrdinalIgnoreCase)) ? 20 : 0;
+
+                double totalScore = skillScore + expScore + eduScore;
+
+                return new
                 {
-                    int score = job.RequiredSkills.Count(skill => candidateSkills.Contains(skill, StringComparer.OrdinalIgnoreCase));
-                    return new { job, score };
-                })
-                .Where(x => x.score > 0) // only jobs with at least one matching skill
-                .OrderByDescending(x => x.score)
-                .Select(x => x.job)
-                .ToList();
+                    Job = job,
+                    Score = totalScore
+                };
+            })
+   .Where(x => x.Score > 0)
+   .OrderByDescending(x => x.Score)
+   .Take(5) // top 5 jobs
+   .Select(x => x.Job)
+   .ToList();
+
+            return rankedJobs;
         }
     }
 }

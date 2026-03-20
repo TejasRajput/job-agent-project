@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class ResumeService {
 
-    private api = "http://localhost:5149/api/resume";
+    private api = "https://localhost:44317/api/resume";
 
     constructor(private http: HttpClient) { }
 

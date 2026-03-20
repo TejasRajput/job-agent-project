@@ -18,7 +18,7 @@ namespace JobAgent.API.Services.Implementations
 
         public async Task<Resume> UploadResumeAsync(IFormFile file)
         {
-            var filePath = Path.Combine("Resumes", file.FileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Resumes", file.FileName);
 
             Directory.CreateDirectory("Resumes");
 

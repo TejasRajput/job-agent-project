@@ -9,9 +9,10 @@ import { RouterOutlet, RouterLink } from '@angular/router';
   template: `
     <h1>AI Job Agent</h1>
     <nav>
-      <a routerLink="/">Dashboard</a> |
+      <a routerLink="/dashboard">Dashboard</a> |
       <a routerLink="/upload">Upload Resume</a> |
-      <a routerLink="/jobs">Job Matches</a>
+      <a routerLink="/job-matches">Job Matches</a> |
+      <a routerLink="/job-recommendations">Job Recommendations</a>
     </nav>
     <hr>
     <router-outlet></router-outlet>

@@ -26,17 +26,36 @@ namespace JobAgent.API.Controllers
         [HttpPost("recommend")]
         public async Task<IActionResult> RecommendJobs([FromBody] ResumeDto resumeDto)
         {
-            // 1️⃣ Call Python AI to parse resume
             var aiResult = await _aiService.ParseResume(resumeDto.FilePath);
 
-            // 2️⃣ Deserialize Python result
-            var parsedSkills = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(aiResult);
-            var skills = parsedSkills?["skills"] ?? new List<string>();
+            var parsed = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(aiResult);
 
-            // 3️⃣ Match jobs
-            var matchedJobs = _jobService.MatchJobs(skills);
+            // Skills
+            var skills = parsed != null && parsed.TryGetValue("skills", out var skillsElem)
+                ? JsonSerializer.Deserialize<List<string>>(skillsElem.GetRawText()) ?? new List<string>()
+                : new List<string>();
 
-            // 4️⃣ Map to DTO for frontend
+            // Experience
+            int experience = 0;
+            if (parsed != null && parsed.TryGetValue("experience", out var expElem))
+            {
+                if (expElem.ValueKind == JsonValueKind.Number && expElem.TryGetInt32(out var expVal))
+                    experience = expVal;
+                else if (expElem.ValueKind == JsonValueKind.String)
+                {
+                    var expString = expElem.GetString() ?? "0";
+                    var digits = new string(expString.Where(char.IsDigit).ToArray());
+                    int.TryParse(digits, out experience);
+                }
+            }
+
+            // Education
+            var education = parsed != null && parsed.TryGetValue("education", out var eduElem)
+                ? JsonSerializer.Deserialize<List<string>>(eduElem.GetRawText()) ?? new List<string>()
+                : new List<string>();
+
+            var matchedJobs = _jobService.MatchJobs(skills, experience, education);
+
             var jobDtos = matchedJobs.Select(job => new JobDto
             {
                 Title = job.Title,
@@ -46,7 +65,6 @@ namespace JobAgent.API.Controllers
             }).ToList();
 
             return Ok(jobDtos);
-
         }
     }
 }
