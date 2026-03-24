@@ -31,6 +31,7 @@ builder.Services.AddHttpClient<IAiService, AiService>();
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IJobService, JobService>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

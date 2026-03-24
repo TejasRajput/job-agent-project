@@ -21,4 +21,21 @@ public class AiService : IAiService
 
         return await response.Content.ReadAsStringAsync();
     }
+
+    public async Task<double> GetMatchScore(string resumeFilePath, string jobDescription)
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            "http://localhost:8000/match-job",
+            new
+            {
+                resume_path = resumeFilePath,
+                job_description = jobDescription
+            });
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<Dictionary<string, double>>();
+
+        return result?["similarity_score"] ?? 0;
+    }
 }
