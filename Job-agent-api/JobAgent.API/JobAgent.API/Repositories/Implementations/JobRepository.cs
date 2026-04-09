@@ -1,17 +1,27 @@
-﻿using JobAgent.API.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using JobAgent.API.Data;
+using JobAgent.API.Models;
 using JobAgent.API.Repositories.Interfaces;
 
 namespace JobAgent.API.Repositories.Implementations
 {
     public class JobRepository: IJobRepository
     {
-        private static readonly List<Job> Jobs = new()
-    {
-        new Job { Title = "Software Engineer", Company = "ABC Corp", RequiredSkills = new List<string>{ "C#", ".NET", "SQL" }, Location = "Bangalore" },
-        new Job { Title = "Frontend Developer", Company = "XYZ Pvt Ltd", RequiredSkills = new List<string>{ "Angular", "HTML", "CSS" }, Location = "Mumbai" },
-        new Job { Title = "Cloud Engineer", Company = "AzureTech", RequiredSkills = new List<string>{ "Azure", ".NET", "C#" }, Location = "Hyderabad" }
-    };
+      private readonly ApplicationDbContext _db;
 
-        public List<Job> GetAllJobs() => Jobs;
+        public JobRepository(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+        public async Task<List<Job>> GetAllJobsAsync()
+        {
+            return await _db.Jobs.ToListAsync();
+        }
+
+        public async Task AddJobAsync(Job job)
+        {
+            _db.Jobs.Add(job);
+            await _db.SaveChangesAsync();
+        }
     }
 }

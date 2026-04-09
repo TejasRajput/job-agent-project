@@ -1,4 +1,5 @@
 ﻿using JobAgent.API.Services.Interfaces;
+using static JobAgent.API.Services.Implementations.PythonEmbeddingService;
 
 namespace JobAgent.API.Services.Implementations;
 
@@ -38,4 +39,22 @@ public class AiService : IAiService
 
         return result?["similarity_score"] ?? 0;
     }
+
+    public async Task<List<double>> GetEmbedding(string text)
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            "http://localhost:8000/generate-embedding",
+            new { text = text });
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
+
+        return result?.Embedding ?? new List<double>();
+    }
+}
+
+public class EmbeddingResponse
+{
+    public List<double> Embedding { get; set; }
 }
